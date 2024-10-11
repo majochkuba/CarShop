@@ -1,0 +1,34 @@
+@model IEnumerable<CarShop.Models.Database.Order>
+
+@{
+    ViewData["Title"] = "Zarządzaj Zamówieniami";
+}
+
+<div class="container">
+    <h2>Zarządzaj Zamówieniami</h2>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Samochód</th>
+                <th>Użytkownik</th>
+                <th>Data zamówienia</th>
+                <th>Akcje</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model)
+            {
+                <tr>
+                    <td>@order.Car.Model</td>
+                    <td>@order.User.UserName</td>
+                    <td>@order.OrderDate</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@order.OrderId" class="btn btn-sm btn-warning">Edytuj</a>
+                        <a asp-action="Delete" asp-route-id="@order.OrderId" class="btn btn-sm btn-danger">Usuń</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

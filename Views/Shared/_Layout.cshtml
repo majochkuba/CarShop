@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="~/CarShop.styles.css" asp-append-version="true" />
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Courier New', Courier, monospace, sans-serif;
             background-color: #f8f9fa;
             margin: 0;
             padding: 0;
@@ -17,7 +17,7 @@
         header {
             background-color: #343a40;
             color: white;
-            padding: 20px 0;
+            padding: 10px 0;
             text-align: center;
         }
         footer {
@@ -35,13 +35,19 @@
         .container {
             max-width: 960px;
         }
+        a {
+            text-decoration: none;
+            color: wheat;
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>CarShop</h1>
-        <p>Twoje miejsce na wymarzone samochody</p>
+        <a asp-controller="Home" asp-action="Index">
+            <h1>CarShop</h1>
+            <p>Twoje miejsce na wymarzone samochody</p>
+        </a>
     </header>
 
     <div class="main-content">

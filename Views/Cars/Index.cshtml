@@ -1,0 +1,36 @@
+@model List<CarShop.Models.Database.Car>
+
+@{
+    ViewData["Title"] = "Przeglądaj Samochody";
+}
+
+<div class="container">
+    <h2>Przeglądaj Samochody</h2>
+    <form method="get" asp-controller="Cars" asp-action="Index" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="searchString" class="form-control" placeholder="Szukaj po nazwie samochodu..." value="@ViewData["CurrentFilter"]" />
+            <button type="submit" class="btn btn-primary">Szukaj</button>
+        </div>
+    </form>
+    <a asp-controller="Cars" asp-action="Create" class="btn btn-success">Dodaj nowy samochód</a>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Marka</th>
+                <th>Model</th>
+                <th>Cena</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var car in Model)
+            {
+                <tr>
+                    <td>@car.Make</td>
+                    <td>@car.Model</td>
+                    <td>@car.Price PLN</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

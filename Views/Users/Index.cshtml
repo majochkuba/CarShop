@@ -1,0 +1,14 @@
+@model CarShop.Models.Database.User
+
+@{
+    ViewData["Title"] = "Panel Użytkownika";
+}
+
+<div class="container">
+    <h2>Witaj, @Model.UserName!</h2>
+    <p>To jest Twój panel użytkownika, gdzie masz dostęp do swoich danych.</p>
+
+    <ul class="list-group">
+        <li class="list-group-item"><strong>Nazwa użytkownika:</strong> @Model.UserName</li>
+    </ul>
+</div>
