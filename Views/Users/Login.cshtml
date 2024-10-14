@@ -1,0 +1,38 @@
+@model CarShop.Models.LoginData
+@{
+    ViewData["Title"] = "Logowanie";
+}
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="card shadow-lg p-4" style="width: 400px;">
+        <h2 class="text-center mb-4">Zaloguj się</h2>
+        
+        <form method="post">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control @(ViewData.ModelState["UserName"]?.Errors.Any() == true ? "is-invalid" : "")" id="UserName" name="UserName" asp-for="UserName" placeholder="Nazwa użytkownika" />
+                <label for="UserName">Nazwa użytkownika</label>
+                <span class="text-danger">@Html.ValidationMessageFor(m => m.UserName)</span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control @(ViewData.ModelState["Password"]?.Errors.Any() == true ? "is-invalid" : "")" id="Password" name="Password" asp-for="Password" placeholder="Hasło" />
+                <label for="Password">Hasło</label>
+                <span class="text-danger">@Html.ValidationMessageFor(m => m.Password)</span>
+            </div>
+
+            <!-- Przycisk logowania -->
+            <button type="submit" class="btn btn-primary w-100 mb-3" formaction="@Url.Action("Login", "Users")">Zaloguj się</button>
+
+            <!-- Przycisk rejestracji -->
+            <button type="submit" class="btn btn-secondary w-100 mb-3" formaction="@Url.Action("Register", "Users")">Zarejestruj się</button>
+
+            <div class="text-center">
+                <small class="text-muted">Nie masz konta? <a href="#">Zarejestruj się</a></small>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

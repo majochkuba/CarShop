@@ -17,15 +17,32 @@ namespace CarShop.Controllers
         // GET: Orders/Index (Zarządzaj Zamówieniami)
         public IActionResult Index()
         {
-            List<Order> orders = _context.Orders.Include(o => o.Car).Include(o => o.User).ToList();
+            if(HttpContext.Session.GetString("role") == "Admin")
+            {
+                List<Order> orders = _context.Orders.Include(o => o.Car).Include(o => o.User).ToList();
             return View(orders);
+            }
+            else
+            {
+                string username = HttpContext.Session.GetString("user");
+                List<Order> orders = _context.Orders.Include(o => o.Car).Include(o => o.User).Where(x => x.User.UserName == username).ToList();
+                return View(orders);
+            }
         }
 
         // GET: Orders/Create (Formularz składania zamówienia)
         public IActionResult Create()
         {
             ViewBag.Cars = new SelectList(_context.Cars, "CarId", "Model");
-            ViewBag.Users = new SelectList(_context.Users, "UserId", "UserName");
+            if(HttpContext.Session.GetString("role") == "Admin")
+            {
+                ViewBag.Users = new SelectList(_context.Users, "UserId", "UserName");
+            }
+            else
+            {
+                string username = HttpContext.Session.GetString("user");
+                ViewBag.Users = new SelectList(_context.Users.Where(x => x.UserName == username).ToList(), "UserId", "UserName");
+            }
             return View();
         }
 
@@ -41,8 +58,16 @@ namespace CarShop.Controllers
             }
             else
             {
-                ViewBag.Cars = new SelectList(_context.Cars, "CarId", "Name", order.CarId);
-                ViewBag.Users = new SelectList(_context.Users, "UserId", "UserName", order.UserId);
+                ViewBag.Cars = new SelectList(_context.Cars, "CarId", "Model");
+                if(HttpContext.Session.GetString("role") == "Admin")
+                {
+                    ViewBag.Users = new SelectList(_context.Users, "UserId", "UserName");
+                }
+                else
+                {
+                    string username = HttpContext.Session.GetString("user");
+                    ViewBag.Users = new SelectList(_context.Users.Where(x => x.UserName == username).ToList(), "UserId", "UserName");
+                }
                 return View(order);
             }
         }
@@ -50,9 +75,15 @@ namespace CarShop.Controllers
         // GET: Orders/Edit/5 (Edytuj zamówienie)
         public IActionResult Edit(int? id)
         {
-            if (id == null)
+            ViewBag.Cars = new SelectList(_context.Cars, "CarId", "Model");
+            if(HttpContext.Session.GetString("role") == "Admin")
             {
-                return NotFound();
+                ViewBag.Users = new SelectList(_context.Users, "UserId", "UserName");
+            }
+            else
+            {
+                string username = HttpContext.Session.GetString("user");
+                ViewBag.Users = new SelectList(_context.Users.Where(x => x.UserName == username).ToList(), "UserId", "UserName");
             }
 
             Order order = _context.Orders.Find(id);
@@ -60,31 +91,56 @@ namespace CarShop.Controllers
             {
                 return NotFound();
             }
-            ViewBag.Cars = new SelectList(_context.Cars, "CarId", "Name", order.CarId);
-            ViewBag.Users = new SelectList(_context.Users, "UserId", "UserName", order.UserId);
+            
             return View(order);
         }
 
         // POST: Orders/Edit/5
         [HttpPost]
-        public ActionResult Edit(int id, Order order)
+        public IActionResult Edit(int id, Order order)
         {
-            if (id != order.OrderId)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
+                Order orderUpdate = _context.Orders.Find(id);
+                orderUpdate.UserId = order.UserId;
+                orderUpdate.CarId = order.CarId;
+                orderUpdate.OrderDate = order.OrderDate;
 
-                    _context.Update(order);
-                    _context.SaveChanges();
+                _context.Update(orderUpdate);
+                _context.SaveChanges();
 
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.Cars = new SelectList(_context.Cars, "CarId", "Name", order.CarId);
             ViewBag.Users = new SelectList(_context.Users, "UserId", "UserName", order.UserId);
+            
             return View(order);
         }
+
+        // POST: Orders/Edit/5
+        [HttpPost]
+        public IActionResult Delete(int id)
+        {
+            _context.Orders.Where(x => x.OrderId == id).ExecuteDelete();
+
+            return RedirectToAction("Index");
+        }
+
+
+        // POST: Orders/Edit/5
+        [HttpPost]
+        public IActionResult Pay(int id)
+        {
+            Payment payment = new Payment {
+                OrderId = id,
+                PaymentDate = DateTime.Now 
+            };
+
+            _context.Add(payment);
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
     }
 }

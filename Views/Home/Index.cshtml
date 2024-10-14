@@ -1,13 +1,17 @@
 ﻿@{
-    ViewData["Title"] = "Car Shop - Strona Główna";
+    ViewData["Title"] = "CarShop - Strona Główna";
 }
 
-<div class="container mt-5">
-    <div class="text-center">
-        <h1 class="display-4">Witamy w Car Shop!</h1>
-        <p class="lead">Twoje miejsce, gdzie spełnisz marzenia o idealnym samochodzie. Kupuj, zarządzaj i odkrywaj nowe modele.</p>
+@if (Context.Session.GetString("user") == null)
+{
+    <div class="text-center mt-5">
+        <h2>Witaj w CarShop</h2>
+        <p>Aby uzyskać pełen dostęp do funkcji naszej strony, zaloguj się do swojego konta.</p>
+        <a asp-controller="Users" asp-action="Login" class="btn btn-primary">Zaloguj się</a>
     </div>
-
+}
+else
+{
     <div class="row mt-5 text-center">
         <div class="col-md-3">
             <div class="card shadow-sm">
@@ -49,11 +53,4 @@
             </div>
         </div>
     </div>
-
-    <div class="row mt-5">
-        <div class="col text-center">
-            <p class="mt-4">Nasza platforma powstała z myślą o miłośnikach motoryzacji, którzy szukają prostego i bezpiecznego sposobu na zakup samochodu. Oferujemy szeroką gamę modeli, intuicyjny interfejs oraz wsparcie na każdym etapie transakcji.</p>
-            <p>Dołącz do grona zadowolonych klientów i znajdź samochód, który będzie Ci służył przez lata. Niezależnie od tego, czy szukasz czegoś nowego, czy używanego – w Car Shop znajdziesz to, czego potrzebujesz!</p>
-        </div>
-    </div>
-</div>
+}

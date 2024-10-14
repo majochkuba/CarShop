@@ -25,7 +25,18 @@
                     <td>@order.OrderDate</td>
                     <td>
                         <a asp-action="Edit" asp-route-id="@order.OrderId" class="btn btn-sm btn-warning">Edytuj</a>
-                        <a asp-action="Delete" asp-route-id="@order.OrderId" class="btn btn-sm btn-danger">Usuń</a>
+                        <form asp-action="Delete" method="post">
+                            <input type="hidden" name="id" value="@order.OrderId" />
+                            <button type="submit" class="btn btn-sm btn-danger">Usuń</button>
+                        </form>
+
+                        @if(!order.IsPaymentCompleted)
+                        {
+                            <form asp-action="Pay" method="post">
+                                <input type="hidden" name="id" value="@order.OrderId" />
+                                <button type="submit" class="btn btn-sm btn-info">Zapłać</button>
+                            </form>
+                        }
                     </td>
                 </tr>
             }

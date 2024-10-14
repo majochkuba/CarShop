@@ -1,3 +1,6 @@
+using System.Security.Cryptography;
+using CarShop.Models;
+using CarShop.Models.Database;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarShop.Controllers
@@ -11,21 +14,93 @@ namespace CarShop.Controllers
             _context = context;
         }
 
-        // GET: Users/Profile (Panel użytkownika)
-        public IActionResult Profile(int? id)
+        // GET: Users (Panel użytkownika)
+        public IActionResult Index()
         {
-            if (id == null)
+            return View();
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Remove("user");
+            HttpContext.Session.Remove("role");
+            return RedirectToAction("Index", "Home");
+        }
+
+
+        // GET: Users/Login
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        // POST: Users/Register
+        [HttpPost]
+        public IActionResult Register(LoginData model)
+        {
+            if (ModelState.IsValid)
             {
-                return NotFound();
+                bool isUserAlreadyTaken = _context.Users.Any(x => x.UserName == model.UserName);
+                if(isUserAlreadyTaken)
+                {
+                    return Login();
+                }
+                else
+                {
+                    HMACSHA256 hmac = new HMACSHA256(System.Text.Encoding.UTF8.GetBytes(""));
+
+                    byte[] hash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(model.Password));
+                    User user = new User {
+                        UserName = model.UserName,
+                        PasswordHash = hash
+                    };
+
+                    _context.Users.Add(user);
+                    _context.SaveChanges();
+
+                    //sesjsa dla zalogowanego usera
+                    HttpContext.Session.SetString("user", user.UserName);
+                    HttpContext.Session.SetString("role", "Uzytkownik");
+
+                    return RedirectToAction("Index", "Home");
+                }
             }
 
-            var user = _context.Users.Find(id);
-            if (user == null)
+            return View(model);
+        }
+
+        // POST: Users/Login
+        [HttpPost]
+        public IActionResult Login(LoginData model)
+        {
+            if (ModelState.IsValid)
             {
-                return NotFound();
+                if(model.UserName == "admin" && model.Password == "admin")
+                {
+                    HttpContext.Session.SetString("user", model.UserName);
+                    HttpContext.Session.SetString("role", "Admin");
+                    return RedirectToAction("Index", "Home");
+                }
+
+                User user = _context.Users.FirstOrDefault(x => x.UserName == model.UserName);
+
+                if (user == null)
+                {
+                    return View(model);
+                }
+
+                HMACSHA256 hmac = new HMACSHA256(System.Text.Encoding.UTF8.GetBytes(""));
+                byte[] hash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(model.Password));
+
+                if(hash.SequenceEqual(user.PasswordHash))
+                {
+                    HttpContext.Session.SetString("user", model.UserName);
+                    HttpContext.Session.SetString("role", "Uzytkownik");
+                    return RedirectToAction("Index", "Home");
+                }
             }
 
-            return View(user);
+            return View(model);
         }
     }
 }
