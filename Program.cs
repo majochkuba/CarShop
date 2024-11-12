@@ -5,12 +5,19 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSession();
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddDbContext<DataContext>(options => options.UseSqlite("Data Source=DB.db"));
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseSession();
 

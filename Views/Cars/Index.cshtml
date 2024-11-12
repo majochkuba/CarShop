@@ -1,7 +1,8 @@
-@model List<CarShop.Models.Database.Car>
+@model CarsViewModel
 
 @{
     ViewData["Title"] = "Przeglądaj Samochody";
+    var results = Model.VechiclesFromApi.Results;
 }
 
 <div class="container">
@@ -27,7 +28,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var car in Model)
+            @foreach (var car in Model.Cars)
             {
                 <tr>
                     <td>@car.Make</td>
@@ -38,3 +39,71 @@
         </tbody>
     </table>
 </div>
+
+    <h3>Dane Podstawowe o Samochodach</h3>
+    <table class="table table-bordered" id="vehicleTable">
+        <thead>
+            <tr>
+                <th>Make ID</th>
+                <th>Make Name</th>
+                <th>Vehicle Type ID</th>
+                <th>Vehicle Type Name</th>
+            </tr>
+        </thead>
+        <tbody id="vehicleTableBody">
+            <!-- Wiersze będą generowane dynamicznie przez JavaScript -->
+        </tbody>
+    </table>
+
+    <!-- Paginacja -->
+    <div class="pagination-controls">
+        <button onclick="previousPage()" class="btn btn-secondary">Poprzednia</button>
+        <span id="pageIndicator">Strona 1</span>
+        <button onclick="nextPage()" class="btn btn-secondary">Następna</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const results = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(results));
+        const rowsPerPage = 10;
+        let currentPage = 1;
+
+        function displayTablePage(page) {
+            const tableBody = document.getElementById("vehicleTableBody");
+            tableBody.innerHTML = ""; 
+
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const paginatedResults = results.slice(start, end);
+
+            paginatedResults.forEach(result => {
+                const row = `<tr>
+                                <td>${result.MakeId}</td>
+                                <td>${result.MakeName}</td>
+                                <td>${result.VehicleTypeId}</td>
+                                <td>${result.VehicleTypeName}</td>
+                             </tr>`;
+                tableBody.innerHTML += row;
+            });
+
+            document.getElementById("pageIndicator").innerText = `Strona ${page}`;
+        }
+
+        function nextPage() {
+            if (currentPage * rowsPerPage < results.length) {
+                currentPage++;
+                displayTablePage(currentPage);
+            }
+        }
+
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                displayTablePage(currentPage);
+            }
+        }
+
+        displayTablePage(currentPage);
+    </script>
+}

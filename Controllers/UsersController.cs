@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CarShop.Controllers
 {
+    [Route("[controller]")]
     public class UsersController : Controller
     {
         private readonly DataContext _context;
@@ -15,11 +16,13 @@ namespace CarShop.Controllers
         }
 
         // GET: Users (Panel użytkownika)
+        [HttpGet]
         public IActionResult Index()
         {
             return View();
         }
 
+        [HttpGet("Logout")]
         public IActionResult Logout()
         {
             HttpContext.Session.Remove("user");
@@ -29,13 +32,14 @@ namespace CarShop.Controllers
 
 
         // GET: Users/Login
+        [HttpGet("Login")]
         public IActionResult Login()
         {
             return View();
         }
 
         // POST: Users/Register
-        [HttpPost]
+        [HttpPost("Register")]
         public IActionResult Register(LoginData model)
         {
             if (ModelState.IsValid)
@@ -70,7 +74,7 @@ namespace CarShop.Controllers
         }
 
         // POST: Users/Login
-        [HttpPost]
+        [HttpPost("Login")]
         public IActionResult Login(LoginData model)
         {
             if (ModelState.IsValid)

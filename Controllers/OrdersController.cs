@@ -5,6 +5,7 @@ using CarShop.Models.Database;
 
 namespace CarShop.Controllers
 {
+    [Route("[controller]")]
     public class OrdersController : Controller
     {
         private DataContext _context;
@@ -15,6 +16,7 @@ namespace CarShop.Controllers
         }
 
         // GET: Orders/Index (Zarządzaj Zamówieniami)
+        [HttpGet]
         public IActionResult Index()
         {
             if(HttpContext.Session.GetString("role") == "Admin")
@@ -31,6 +33,7 @@ namespace CarShop.Controllers
         }
 
         // GET: Orders/Create (Formularz składania zamówienia)
+        [HttpGet("Create")]
         public IActionResult Create()
         {
             ViewBag.Cars = new SelectList(_context.Cars, "CarId", "Model");
@@ -47,7 +50,7 @@ namespace CarShop.Controllers
         }
 
         // POST: Orders/Create (Złóż zamówienie)
-        [HttpPost]
+        [HttpPost("Create")]
         public IActionResult Create(Order order)
         {
             if (ModelState.IsValid)
@@ -73,6 +76,7 @@ namespace CarShop.Controllers
         }
 
         // GET: Orders/Edit/5 (Edytuj zamówienie)
+        [HttpGet("Edit/{id}")]
         public IActionResult Edit(int? id)
         {
             ViewBag.Cars = new SelectList(_context.Cars, "CarId", "Model");
@@ -96,7 +100,7 @@ namespace CarShop.Controllers
         }
 
         // POST: Orders/Edit/5
-        [HttpPost]
+        [HttpPost("Edit/{id}")]
         public IActionResult Edit(int id, Order order)
         {
             if (ModelState.IsValid)
@@ -117,8 +121,8 @@ namespace CarShop.Controllers
             return View(order);
         }
 
-        // POST: Orders/Edit/5
-        [HttpPost]
+        // POST: Orders/Delete/5
+        [HttpPost("Delete")]
         public IActionResult Delete(int id)
         {
             _context.Orders.Where(x => x.OrderId == id).ExecuteDelete();
@@ -127,8 +131,8 @@ namespace CarShop.Controllers
         }
 
 
-        // POST: Orders/Edit/5
-        [HttpPost]
+        // POST: Orders/Pay
+        [HttpPost("Pay")]
         public IActionResult Pay(int id)
         {
             Payment payment = new Payment {
